@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -34,5 +35,30 @@ class UserController extends Controller
 
         User::create($request->all());
         return redirect()->route('users.index')->with('success', 'User created successfully');
+    }
+
+    //edit
+    public function edit(User $user) {
+        return view('pages.users.edit', compact('user'));
+    }
+
+    // update
+    public function update(Request $request, User $user)
+    {
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->role = $request->role;
+        $user->save();
+
+        //check if phone is not empty
+        if ($request->phone) {
+            $user->update(['phone' => $request->phone]);
+        }
+        //check if password is not empty
+        if ($request->password) {
+            $user->update(['password' => Hash::make($request->password)]);
+        }
+        return redirect()->route('users.index')->with('success', 'User updated successfully');
     }
 }
