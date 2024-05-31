@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Category;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -21,5 +22,8 @@ class DatabaseSeeder extends Seeder
             'email' => 'anwar@gmail.com',
             'password' => Hash::make('12345678'),
         ]);
+
+        // category factory
+        Category::factory(2)->create();
     }
 }
