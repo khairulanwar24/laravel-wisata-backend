@@ -59,5 +59,40 @@ class ProductController extends Controller
 
         Product::create($request->all());
         return redirect()->route('products.index')->with('success', 'Product created Successfully');
+
+
+    }
+
+    // edit
+    public function edit(Product $product) {
+        $categories = Category::orderBy('name', 'ASC')->get();
+        return view('pages.products.edit', compact('product', 'categories'));
+    }
+
+    // update
+    public function update(Request $request, Product $product) {
+        $product->category_id = $request->category_id;
+        $product->name = $request->name;
+        $product->description = $request->description;
+        $product->price = $request->price;
+        $product->criteria = $request->criteria;
+        $product->favorite = $request->favorite;
+        $product->status = $request->status;
+        $product->stock = $request->stock;
+        $product->save();
+
+        // check if image is not empty
+        if ($request->image) {
+            $image = $request->file('image');
+            $image->storeAs('public/products', $product->id . '.' . $image->extension());
+            $product->image = 'products/' . $product->id . '.' . $image->extension();
+            $product->save();
+        }
+        return redirect()->route('products.index')->with('success', 'Product updated Successfully');
+    }
+    //destroy
+    public function destroy(Product $product) {
+        $product->delete();
+        return redirect()->route('products.index')->with('success', 'Product deleted successfully');
     }
 }
