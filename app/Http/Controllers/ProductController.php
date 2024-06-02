@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -15,5 +16,48 @@ class ProductController extends Controller
 
         })->orderBy('id', 'desc')->paginate(10);
         return view('pages.products.index', compact('products'));
+    }
+
+    // create
+    public function create() {
+        $categories = Category::orderBy('name', 'ASC')->get();
+        return view('pages.products.create', compact('categories'));
+    }
+
+    // store
+    public function store(Request $request) {
+        $request->validate([
+            'category_id' => 'required',
+            'name'=> 'required',
+            'description' => 'required',
+            'price' => 'required',
+            'image' => 'required',
+            'criteria' => 'required',
+            'favorite' => 'required',
+            'status' => 'required',
+            'stock'=> 'required',
+        ]);
+
+        $product = new Product;
+        $product->category_id = $request->category_id;
+        $product->name = $request->name;
+        $product->description = $request->description;
+        $product->price = $request->price;
+
+        $product->criteria = $request->criteria;
+        $product->favorite = $request->favorite;
+        $product->status = $request->status;
+        $product->stock = $request->stock;
+
+        $product->save();
+        // insert image
+        $image = $request->file('image');
+        $image->storeAs('public/products', $product->id . '.' . $image->extension());
+        $product->image = 'products/' . $product->id . '.' . $image->extension();
+        $product->save();
+        // $request->image = $image->hashName();
+
+        Product::create($request->all());
+        return redirect()->route('products.index')->with('success', 'Product created Successfully');
     }
 }
