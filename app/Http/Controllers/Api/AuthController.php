@@ -41,10 +41,18 @@ class AuthController extends Controller
             'token' => $token,
             'user' => $user,
         ]);
+
+
+
     }
-    // if (!auth()->attempt(($request->only('email', 'password'))) {
-    //     return response()->json([
-    //         'message' => 'Unauthorized'
-    //     ], 401);
-    // });
+    // logout
+    public function logout(Request $request) {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'messgae' => 'Logout Successfully'
+        ]);
+    }
+
 }
